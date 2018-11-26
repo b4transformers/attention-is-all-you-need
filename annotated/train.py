@@ -23,7 +23,9 @@ if True:
     def tokenize_bpe(text):
         return text.split(' ')
 
-    TEXT = data.Field(tokenize=tokenize_bpe, pad_token=BLANK_WORD)
+    TEXT = data.Field(tokenize=tokenize_bpe, pad_token=BLANK_WORD,
+        use_vocab=True, sequential=True
+    )
     train, val, test = datasets.TranslationDataset.splits(
         path='./data/mini', train='train', validation='dev', test='test',
         exts=('.bpe.en', '.bpe.ja'), fields=(TEXT, TEXT))
