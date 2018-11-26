@@ -62,11 +62,16 @@ if True:
 
 
 ### start training ###
+max_epoch = 100
+save_dir = './models/'
+if not os.path.exists(save_dir):
+    os.makedirs(save_dir)
+save_every = 1
 if True:
     print('Training ...')
     model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
             torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
-    for epoch in range(10):
+    for epoch in range(max_epoch):
         model.train()
         #model_par.train()
         run_epoch((rebatch(pad_idx, b) for b in train_iter),
@@ -81,6 +86,17 @@ if True:
                           #model_par,
                           SimpleLossCompute(model.generator, criterion, opt=None))
                           #MultiGPULossCompute(model.generator, criterion, devices=devices, opt=None))
+
         print(loss)
+
+        # save model
+        if epoch % save_every == 0:
+            save_path = save_dir+'state_dict{}.pth'.format(epoch)
+            torch.save(model.state_dict(), save_path)
+            print('Saved model as: ',save_path)
+
+
 else:
-    model = torch.load("iwslt.pt")
+    import glob
+    path = sorted(glob.glob(save_dir+'*'))[-1]
+    model.load_state_dict(torch.load(path))
