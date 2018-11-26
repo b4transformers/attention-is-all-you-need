@@ -1,0 +1,10 @@
+Details of dose rate of "Fugen Power Plant" can be calculated by using DERS software.
+The changes of conditions for computation of the dose rate, namely, object changes, are inputted to DERS from VRdose software by using a special marker.
+Responding to these changes DERS can compute new dose rate.
+The characteristics of R5 version of this software, instruction manual, and design document were summarized.
+Here was developed a phase shift magnetic sensor system composed of two sets of coils, amplifiers, and phase shifts for sensing and output.
+This is a feedback circuit shifting resonance frequency by chang of input signal phase, which can detect change of magnetic features of an object present at a center of two coils on high sensitivity and resolution.
+For the coils, here were used two coils with 6mm of inner diameter and 800 of coil number by inversely connecting.
+On a test, it was possible to analyze features of city water, pure water, city water treated by magnetized device by changing frequency.
+And, it was confirmed to enable also to detect change of flow rate and volume.
+Here was described a high sensitivity strain sensor using the surface acoustic waves (SAW) for radio frequency IC tag (RFID) and sensor network, to numerically discuss a strain testing meathod observing SAW resonant fequency (SAW-RF) shifts caused by the strain.
