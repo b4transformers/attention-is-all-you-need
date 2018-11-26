@@ -34,15 +34,14 @@ if True:
 ### model, iterator ###
 # GPUs to use
 #devices = [0, 1, 2, 3]
-devices = [0]
 device = torch.device('cuda')
 if True:
     print('Creating model & iterator ...')
     pad_idx = TEXT.vocab.stoi[BLANK_WORD]
     model = make_model(len(TEXT.vocab.stoi), len(TEXT.vocab.stoi), N=6)
-    #model.cuda()
+    model.cuda()
     criterion = LabelSmoothing(size=len(TEXT.vocab.stoi), padding_idx=pad_idx, smoothing=0.1)
-    #criterion.cuda()
+    criterion.cuda()
     BATCH_SIZE = 12000
     train_iter = MyIterator(train, batch_size=BATCH_SIZE, device=device,
                             repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
@@ -68,12 +67,13 @@ if True:
         model_par.train()
         run_epoch((rebatch(pad_idx, b) for b in train_iter),
                   model_par,
-                  MultiGPULossCompute(model.generator, criterion, devices=devices, opt=model_opt))
+                  SimpleLossCompute(model.generator, criterion, opt=model_opt))
+                  #MultiGPULossCompute(model.generator, criterion, devices=devices, opt=model_opt))
         model_par.eval()
         loss = run_epoch((rebatch(pad_idx, b) for b in valid_iter),
                           model_par,
-                          MultiGPULossCompute(model.generator, criterion,
-                          devices=devices, opt=None))
+                          SimpleLossCompute(model.generator, criterion, opt=None))
+                          #MultiGPULossCompute(model.generator, criterion, devices=devices, opt=None))
         print(loss)
 else:
     model = torch.load("iwslt.pt")
