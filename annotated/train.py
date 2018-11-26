@@ -49,7 +49,7 @@ if True:
     valid_iter = MyIterator(val, batch_size=BATCH_SIZE, device=device,
                             repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                             batch_size_fn=batch_size_fn, train=False)
-    model_par = nn.DataParallel(model, device_ids=devices)
+    #model_par = nn.DataParallel(model, device_ids=devices)
 
 ### shared embedding ###
 if True:
@@ -64,14 +64,18 @@ if True:
     model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
             torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
     for epoch in range(10):
-        model_par.train()
+        model.train()
+        #model_par.train()
         run_epoch((rebatch(pad_idx, b) for b in train_iter),
-                  model_par,
+                  model,
+                  #model_par,
                   SimpleLossCompute(model.generator, criterion, opt=model_opt))
                   #MultiGPULossCompute(model.generator, criterion, devices=devices, opt=model_opt))
-        model_par.eval()
+        model.eval()
+        #model_par.eval()
         loss = run_epoch((rebatch(pad_idx, b) for b in valid_iter),
-                          model_par,
+                          model,
+                          #model_par,
                           SimpleLossCompute(model.generator, criterion, opt=None))
                           #MultiGPULossCompute(model.generator, criterion, devices=devices, opt=None))
         print(loss)
