@@ -2,6 +2,7 @@ from prelims import *
 from model import *
 from utils import *
 from collections import Counter
+import os
 
 class Vocab:
     def __init__(self, vocab_file):
