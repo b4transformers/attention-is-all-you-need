@@ -46,7 +46,7 @@ def run_epoch(data_iter, model, loss_compute):
                     (i, loss / batch.ntokens, tokens / elapsed))
             start = time.time()
             tokens = 0
-    return total_loss / total_tokens
+    return total_loss / float(total_tokens)
 
 
 global max_src_in_batch, max_tgt_in_batch
