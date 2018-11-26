@@ -223,7 +223,7 @@ class MultiGPULossCompute:
             # Sum and normalize loss
             l = nn.parallel.gather(loss,
                                    target_device=self.devices[0])
-            l = l.sum()[0].float() / normalize
+            l = l.sum()[0] / normalize.float()
             total += l.data[0]
 
             # Backprop loss to output of transformer
