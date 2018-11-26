@@ -126,14 +126,6 @@ class DecoderLayer(nn.Module):
         x = self.sublayer[1](x, lambda x: self.src_attn(x, m, m, src_mask))
         return self.sublayer[2](x, self.feed_forward)
 
-
-def subsequent_mask(size):
-    "Mask out subsequent positions."
-    attn_shape = (1, size, size)
-    subsequent_mask = np.triu(np.ones(attn_shape), k=1).astype('uint8')
-    return torch.from_numpy(subsequent_mask) == 0
-
-
 def attention(query, key, value, mask=None, dropout=None):
     "Compute 'Scaled Dot Product Attention'"
     d_k = query.size(-1)
