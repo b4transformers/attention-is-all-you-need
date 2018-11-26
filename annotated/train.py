@@ -1,6 +1,7 @@
 from prelims import *
 from model import *
 from utils import *
+from collections import Counter
 
 class Vocab:
     def __init__(self, vocab_file):
@@ -29,8 +30,8 @@ if True:
     train, val, test = datasets.TranslationDataset.splits(
         path='./data/mini', train='train', validation='dev', test='test',
         exts=('.bpe.en', '.bpe.ja'), fields=(TEXT, TEXT))
-    TEXT.vocab = Vocab(vocab_path)
-
+    vocab = Vocab(vocab_path)
+    TEXT.vocab = torchtext.vocab.Vocab(Counter(vocab.stoi.keys), specials=[])
 
 
 ### model, iterator ###
