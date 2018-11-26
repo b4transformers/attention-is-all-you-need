@@ -31,7 +31,7 @@ if True:
         path='./data/mini', train='train', validation='dev', test='test',
         exts=('.bpe.en', '.bpe.ja'), fields=(TEXT, TEXT))
     vocab = Vocab(vocab_path)
-    TEXT.vocab = torchtext.vocab.Vocab(Counter(vocab.stoi.keys), specials=[])
+    TEXT.vocab = torchtext.vocab.Vocab(Counter(vocab.stoi.keys()), specials=[])
 
 
 ### model, iterator ###
