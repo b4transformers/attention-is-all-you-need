@@ -142,7 +142,7 @@ class SimpleLossCompute:
         if self.opt is not None:
             self.opt.step()
             self.opt.optimizer.zero_grad()
-        return loss.data[0] * norm
+        return loss.data[0] * norm.float()
 
 
 def greedy_decode(model, src, src_mask, max_len, start_symbol):
