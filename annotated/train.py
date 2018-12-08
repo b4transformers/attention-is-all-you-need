@@ -3,6 +3,7 @@ from model import *
 from utils import *
 from collections import Counter
 import os
+import argparse
 
 
 class Vocab:
@@ -17,9 +18,16 @@ class Vocab:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--vocab", type=str, required=True,
+                        help="Path to the vocabulary file.")
+    parser.add_argument("--data", type=str, required=True,
+                        help="Path to the data directory.")
+    args = parser.parse_args()
+
     # -- en-ja dataset -- #
     print('Creating dataset ...')
-    vocab_path = '../data/mini/bpe500.vocab'
+    vocab_path = args.vocab
     BOS_WORD = '<s>'
     EOS_WORD = '</s>'
     BLANK_WORD = "<pad>"
@@ -31,7 +39,7 @@ if __name__ == '__main__':
         use_vocab=True, sequential=True
     )
     train, val, test = datasets.TranslationDataset.splits(
-        path='../data/mini', train='train', validation='dev', test='test',
+        path=args.data, train='train', validation='dev', test='test',
         exts=('.bpe.en', '.bpe.ja'), fields=(TEXT, TEXT))
     vocab = Vocab(vocab_path)
     TEXT.vocab = torchtext.vocab.Vocab(Counter(vocab.stoi.keys()), specials=[])
