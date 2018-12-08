@@ -4,6 +4,7 @@ from utils import *
 from collections import Counter
 import os
 
+
 class Vocab:
     def __init__(self, vocab_file):
         self.stoi = {'<pad>': 0}
@@ -15,13 +16,14 @@ class Vocab:
                 self.itos[len(self.itos)] = token
 
 
-### en-ja dataset ###
-if True:
+if __name__ == '__main__':
+    # -- en-ja dataset -- #
     print('Creating dataset ...')
     vocab_path = './data/mini/bpe500.vocab'
     BOS_WORD = '<s>'
     EOS_WORD = '</s>'
     BLANK_WORD = "<pad>"
+
     def tokenize_bpe(text):
         return text.split(' ')
 
@@ -34,12 +36,10 @@ if True:
     vocab = Vocab(vocab_path)
     TEXT.vocab = torchtext.vocab.Vocab(Counter(vocab.stoi.keys()), specials=[])
 
-
-### model, iterator ###
-# GPUs to use
-#devices = [0, 1, 2, 3]
-device = torch.device('cuda')
-if True:
+    # -- model, iterator -- #
+    # GPUs to use
+    # devices = [0, 1, 2, 3]
+    device = torch.device('cuda')
     print('Creating model & iterator ...')
     pad_idx = TEXT.vocab.stoi[BLANK_WORD]
     model = make_model(len(TEXT.vocab.stoi), len(TEXT.vocab.stoi), N=6)
@@ -53,40 +53,37 @@ if True:
     valid_iter = MyIterator(val, batch_size=BATCH_SIZE, device=device,
                             repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                             batch_size_fn=batch_size_fn, train=False)
-    #model_par = nn.DataParallel(model, device_ids=devices)
-
-### shared embedding ###
-if True:
+    # model_par = nn.DataParallel(model, device_ids=devices)
+    # --shared embedding-- #
     print('Embedding is shared.')
     model.src_embed[0].lut.weight = model.tgt_embed[0].lut.weight
     model.generator.proj.weight = model.tgt_embed[0].lut.weight
 
 
-### start training ###
-max_epoch = 100
-save_dir = './models/'
-if not os.path.exists(save_dir):
-    os.makedirs(save_dir)
-save_every = 1
-if True:
+    # --start training-- #
+    max_epoch = 100
+    save_dir = './models/'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    save_every = 1
     print('Training ...')
     model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
             torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
     for epoch in range(max_epoch):
         model.train()
-        #model_par.train()
+        # model_par.train()
         run_epoch((rebatch(pad_idx, b) for b in train_iter),
                   model,
-                  #model_par,
+                  # model_par,
                   SimpleLossCompute(model.generator, criterion, opt=model_opt))
-                  #MultiGPULossCompute(model.generator, criterion, devices=devices, opt=model_opt))
+                  # MultiGPULossCompute(model.generator, criterion, devices=devices, opt=model_opt))
         model.eval()
-        #model_par.eval()
+        # model_par.eval()
         loss = run_epoch((rebatch(pad_idx, b) for b in valid_iter),
-                          model,
-                          #model_par,
-                          SimpleLossCompute(model.generator, criterion, opt=None))
-                          #MultiGPULossCompute(model.generator, criterion, devices=devices, opt=None))
+                         model,
+                         # model_par,
+                         SimpleLossCompute(model.generator, criterion, opt=None))
+                         # MultiGPULossCompute(model.generator, criterion, devices=devices, opt=None))
 
         print(loss)
 
@@ -96,8 +93,8 @@ if True:
             torch.save(model.state_dict(), save_path)
             print('Saved model as: ',save_path)
 
-
-else:
-    import glob
-    path = sorted(glob.glob(save_dir+'*'))[-1]
-    model.load_state_dict(torch.load(path))
+#
+# else:
+#     import glob
+#     path = sorted(glob.glob(save_dir+'*'))[-1]
+#     model.load_state_dict(torch.load(path))
