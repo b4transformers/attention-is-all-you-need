@@ -19,6 +19,7 @@ parser.add_argument('-i', '--input', help='input file', required=True)
 parser.add_argument('-o', '--output', help='output directory', default='./')
 parser.add_argument('-v', '--vocab', help='vocabulary size', type=int, default=32000)
 parser.add_argument('-m', '--model', help='model type of sentencepiece', default='bpe')
+parser.add_argument('-n', '--normalization_rule', help='unicode normalization rule', default='nfkc')
 args = parser.parse_args()
 
 input = args.input
@@ -27,6 +28,7 @@ if not args.output.endswith(os.path.sep):
 model_prefix = args.output + args.model + str(args.vocab)
 vocab_size = args.vocab
 model_type = args.model
+normalization_rule_name = args.normalization_rule
 
-spm.SentencePieceTrainer.Train('--input={} --model_prefix={} --vocab_size={} --model_type={}'
-    .format(input, model_prefix, vocab_size, model_type))
+spm.SentencePieceTrainer.Train('--input={} --model_prefix={} --vocab_size={} --model_type={} --normalization_rule_name={}'
+    .format(input, model_prefix, vocab_size, model_type, normalization_rule_name))
