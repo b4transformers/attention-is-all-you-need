@@ -99,7 +99,7 @@ if __name__ == '__main__':
         if epoch % save_every == 0:
             save_path = save_dir+'state_dict{}.pth'.format(epoch)
             torch.save(model.state_dict(), save_path)
-            print('Saved model as: ',save_path)
+            print('Saved model as: ', save_path)
 
 #
 # else:
