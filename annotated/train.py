@@ -19,7 +19,7 @@ class Vocab:
 if __name__ == '__main__':
     # -- en-ja dataset -- #
     print('Creating dataset ...')
-    vocab_path = './data/mini/bpe500.vocab'
+    vocab_path = '../data/mini/bpe500.vocab'
     BOS_WORD = '<s>'
     EOS_WORD = '</s>'
     BLANK_WORD = "<pad>"
@@ -31,7 +31,7 @@ if __name__ == '__main__':
         use_vocab=True, sequential=True
     )
     train, val, test = datasets.TranslationDataset.splits(
-        path='./data/mini', train='train', validation='dev', test='test',
+        path='../data/mini', train='train', validation='dev', test='test',
         exts=('.bpe.en', '.bpe.ja'), fields=(TEXT, TEXT))
     vocab = Vocab(vocab_path)
     TEXT.vocab = torchtext.vocab.Vocab(Counter(vocab.stoi.keys()), specials=[])
