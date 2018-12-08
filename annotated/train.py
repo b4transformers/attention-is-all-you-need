@@ -23,6 +23,7 @@ if __name__ == '__main__':
     BOS_WORD = '<s>'
     EOS_WORD = '</s>'
     BLANK_WORD = "<pad>"
+
     def tokenize_bpe(text):
         return text.split(' ')
 

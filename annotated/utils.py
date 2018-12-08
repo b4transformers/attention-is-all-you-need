@@ -27,6 +27,7 @@ class Batch:
             subsequent_mask(tgt.size(-1)).type_as(tgt_mask.data))
         return tgt_mask
 
+
 def run_epoch(data_iter, model, loss_compute):
     "Standard Training and Logging Function"
     start = time.time()
@@ -50,6 +51,8 @@ def run_epoch(data_iter, model, loss_compute):
 
 
 global max_src_in_batch, max_tgt_in_batch
+
+
 def batch_size_fn(new, count, sofar):
     "Keep augmenting batch and calculate total number of tokens + padding."
     global max_src_in_batch, max_tgt_in_batch
@@ -61,6 +64,7 @@ def batch_size_fn(new, count, sofar):
     src_elements = count * max_src_in_batch
     tgt_elements = count * max_tgt_in_batch
     return max(src_elements, tgt_elements)
+
 
 class NoamOpt:
     "Optim wrapper that implements rate."
@@ -88,6 +92,7 @@ class NoamOpt:
         return self.factor * \
             (self.model_size ** (-0.5) *
             min(step ** (-0.5), step * self.warmup ** (-1.5)))
+
 
 def get_std_opt(model):
     return NoamOpt(model.src_embed[0].d_model, 2, 4000,
@@ -117,7 +122,8 @@ class LabelSmoothing(nn.Module):
         self.true_dist = true_dist
         return self.criterion(x, Variable(true_dist, requires_grad=False))
 
-### A First Example ###
+
+# --A First Example-- #
 def data_gen(V, batch, nbatches):
     "Generate random data for a src-tgt copy task."
     for i in range(nbatches):
@@ -126,6 +132,7 @@ def data_gen(V, batch, nbatches):
         src = Variable(data, requires_grad=False)
         tgt = Variable(data, requires_grad=False)
         yield Batch(src, tgt, 0)
+
 
 class SimpleLossCompute:
     "A simple loss compute and train function."
@@ -160,6 +167,7 @@ def greedy_decode(model, src, src_mask, max_len, start_symbol):
                         torch.ones(1, 1).type_as(src.data).fill_(next_word)], dim=1)
     return ys
 
+
 class MyIterator(data.Iterator):
     def create_batches(self):
         if self.train:
@@ -178,10 +186,12 @@ class MyIterator(data.Iterator):
                                           self.batch_size_fn):
                 self.batches.append(sorted(b, key=self.sort_key))
 
+
 def rebatch(pad_idx, batch):
     "Fix order in torchtext to match ours"
     src, trg = batch.src.transpose(0, 1), batch.trg.transpose(0, 1)
     return Batch(src, trg, pad_idx)
+
 
 # Skip if not interested in multigpu.
 class MultiGPULossCompute:
