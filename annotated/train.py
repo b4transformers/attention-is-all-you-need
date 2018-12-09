@@ -23,6 +23,9 @@ if __name__ == '__main__':
                         help="Path to the vocabulary file.")
     parser.add_argument("--data", type=str, required=True,
                         help="Path to the data directory.")
+    parser.add_argument("--gpu", type=int, required=True,
+                        default=-1,
+                        help="GPU core id to use. Single gpu only. Default cpu.")
     args = parser.parse_args()
 
     # -- en-ja dataset -- #
@@ -47,7 +50,10 @@ if __name__ == '__main__':
     # -- model, iterator -- #
     # GPUs to use
     # devices = [0, 1, 2, 3]
-    device = torch.device('cuda')
+    if args.gpu > -1:
+        device = torch.device(f"cuda:{args.gpu}")
+    else:
+        device = torch.device("cpu")
     print('Creating model & iterator ...')
     pad_idx = TEXT.vocab.stoi[BLANK_WORD]
     model = make_model(len(TEXT.vocab.stoi), len(TEXT.vocab.stoi), N=6)
