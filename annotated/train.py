@@ -23,6 +23,9 @@ if __name__ == '__main__':
                         help="Path to the vocabulary file.")
     parser.add_argument("--data", type=str, required=True,
                         help="Path to the data directory.")
+    parser.add_argument("--gpu", type=int, required=True,
+                        default=-1,
+                        help="GPU core id for training. Single gpu only. Default cpu only.")
     args = parser.parse_args()
 
     # -- en-ja dataset -- #
@@ -40,21 +43,24 @@ if __name__ == '__main__':
     )
     train, val, test = datasets.TranslationDataset.splits(
         path=args.data, train='train', validation='dev', test='test',
-        exts=('.bpe.en', '.bpe.ja'), fields=(TEXT, TEXT))
+        exts=('.bpe32000.en', '.bpe32000.ja'), fields=(TEXT, TEXT))
     vocab = Vocab(vocab_path)
     TEXT.vocab = torchtext.vocab.Vocab(Counter(vocab.stoi.keys()), specials=[])
 
     # -- model, iterator -- #
     # GPUs to use
     # devices = [0, 1, 2, 3]
-    device = torch.device('cuda')
+    if args.gpu > -1:
+        device = torch.device(f"cuda:{args.gpu}")
+    else:
+        device = torch.device("cpu")
     print('Creating model & iterator ...')
     pad_idx = TEXT.vocab.stoi[BLANK_WORD]
     model = make_model(len(TEXT.vocab.stoi), len(TEXT.vocab.stoi), N=6)
     model.cuda()
     criterion = LabelSmoothing(size=len(TEXT.vocab.stoi), padding_idx=pad_idx, smoothing=0.1)
     criterion.cuda()
-    BATCH_SIZE = 12000
+    BATCH_SIZE = 64
     train_iter = MyIterator(train, batch_size=BATCH_SIZE, device=device,
                             repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                             batch_size_fn=batch_size_fn, train=True)
