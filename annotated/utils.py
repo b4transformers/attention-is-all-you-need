@@ -1,5 +1,6 @@
 from prelims import *
 
+
 def subsequent_mask(size):
     "Mask out subsequent positions."
     attn_shape = (1, size, size)
